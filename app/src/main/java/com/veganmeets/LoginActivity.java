@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
         mLoginEmail = (EditText) findViewById(R.id.edit_login_email);
         mLoginPassword = (EditText) findViewById(R.id.edit_login_pw);
 
-
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -69,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         btn_Register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this, RegistrationActivty.class));
+                startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
                 finish();
             }
         });
