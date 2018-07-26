@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -17,17 +18,25 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
-    private ArrayList<String> arrayCard;
-    private ArrayAdapter<String> arrayAdapter;
+    private cards_reference cards_data[];
+    private card_arrayAdapter arrayAdapter;
+
+    private String userSex,oppositeSex,currentUID;
     private int i;
     private Button signout;
+
     private FirebaseAuth firebaseAuth;
-    private String userSex,oppositeSex;
+    private DatabaseReference databaseReference;
+
+    ListView listView;
+    List<cards_reference> cardItems;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +44,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        currentUID = firebaseAuth.getCurrentUser().getUid();
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
         signout = (Button) findViewById(R.id.signout);
 
         checkUserSex();
-        arrayCard = new ArrayList<>();
-        arrayCard.add("Test Male");
-        arrayCard.add("Test Female");
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.item, R.id.helloText, arrayCard);
+        cardItems = new ArrayList<>();
+        arrayAdapter = new card_arrayAdapter(this, R.layout.item, cardItems);
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.frame);
 
@@ -52,7 +61,7 @@ public class MainActivity extends Activity {
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                arrayCard.remove(0);
+                cardItems.remove(0);
                 arrayAdapter.notifyDataSetChanged();
             }
 
@@ -61,11 +70,21 @@ public class MainActivity extends Activity {
                 //Do something on the left!
                 //You also have access to the original object.
                 //If you want to use it just cast it (String) dataObject
+
+                //This will save USER ID to Firebase DB on LEFT swipe
+                cards_reference object = (cards_reference) dataObject;
+                String userID = object.getUserID();
+                databaseReference.child(oppositeSex).child(userID).child("swipes").child("no").child(currentUID).setValue(true);
                 Toast.makeText(getApplicationContext(),"Left!",Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
+                //This will save USER ID to Firebase DB on Right swipe
+                cards_reference object = (cards_reference) dataObject;
+                String userID = object.getUserID();
+                databaseReference.child(oppositeSex).child(userID).child("swipes").child("yes").child(currentUID).setValue(true);
+                usersMatched(userID);
                 Toast.makeText(getApplicationContext(),"Right!",Toast.LENGTH_SHORT).show();
             }
 
@@ -98,12 +117,31 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void usersMatched(String userID){
+        DatabaseReference currentUserMatches = databaseReference.child(userSex).child(currentUID).child("swipes").child("yes").child(userID);
+        currentUserMatches.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    Toast.makeText(MainActivity.this,"New Match!",Toast.LENGTH_LONG).show();
+                    databaseReference.child(oppositeSex).child(dataSnapshot.getKey()).child("swipes").child("matches").child(currentUID).setValue(true);
+                    databaseReference.child(userSex).child(currentUID).child("swipes").child("matches").child(dataSnapshot.getKey()).setValue(true);
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     public void checkUserSex(){
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         //For Male DB
-        DatabaseReference maleDB = FirebaseDatabase.getInstance().getReference()
-                .child("Users").child("Male");
+        DatabaseReference maleDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Male");
         maleDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -128,8 +166,7 @@ public class MainActivity extends Activity {
         });
 
         //For Female DB
-        DatabaseReference femaleDB = FirebaseDatabase.getInstance().getReference()
-                .child("Users").child("Female");
+        DatabaseReference femaleDB = FirebaseDatabase.getInstance().getReference().child("Users").child("Female");
         femaleDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
@@ -155,13 +192,13 @@ public class MainActivity extends Activity {
     }
 
     public void getOppositeSex(){
-        DatabaseReference oppositeSexDB = FirebaseDatabase.getInstance().getReference()
-                .child("Users").child(oppositeSex);
+        DatabaseReference oppositeSexDB = FirebaseDatabase.getInstance().getReference().child("Users").child(oppositeSex);
         oppositeSexDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot.exists()){
-                    arrayCard.add(dataSnapshot.child("name").getValue().toString());
+                if(dataSnapshot.exists() && !dataSnapshot.child("swipes").child("no").hasChild(currentUID) && !dataSnapshot.child("swipes").child("yes").hasChild(currentUID)){
+                    cards_reference Item = new cards_reference(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString());
+                    cardItems.add(Item);
                     arrayAdapter.notifyDataSetChanged();
                 }
             }
@@ -178,5 +215,11 @@ public class MainActivity extends Activity {
             public void onCancelled(DatabaseError databaseError) {
             }
         });
+    }
+
+    public void goToSettings(View view) {
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        intent.putExtra("userSex", userSex);
+        startActivity(intent);
     }
 }
