@@ -1,4 +1,4 @@
-package com.veganmeets;
+package com.veganmeets.App;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.veganmeets.R;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class SettingsActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
 
-    private String userID, name, age, profile_pic_url;
+    private String userID, name, age, profile_pic_url, userSex;
     private Uri mUri;
 
     @Override
@@ -49,10 +50,9 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         populateUI();
 
-        String userSex = getIntent().getExtras().getString("userSex");
         firebaseAuth = FirebaseAuth.getInstance();
         userID = firebaseAuth.getCurrentUser().getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userSex).child(userID);
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
 
         getUserInfo();
 
@@ -93,9 +93,20 @@ public class SettingsActivity extends AppCompatActivity {
                         age = map.get("age").toString();
                         settingsAge.setText(age);
                     }
-                    if(map.get("profilePicURL") != null){
+                    if(map.get("userSex") != null){
+                        userSex = map.get("userSex").toString();
+                    }
+                    Glide.clear(settingsProPic);
+                    if(map.get("profilePicURL")!= null){
                         profile_pic_url = map.get("profilePicURL").toString();
-                        Glide.with(getApplication()).load(profile_pic_url).into(settingsProPic);
+                        switch (profile_pic_url) {
+                            case "default":
+                                Glide.with(getApplication()).load(R.mipmap.ic_default_profile).into(settingsProPic);
+                                break;
+                            default:
+                                Glide.with(getApplication()).load(profile_pic_url).into(settingsProPic);
+                                break;
+                        }
                     }
                 }
             }
@@ -115,9 +126,8 @@ public class SettingsActivity extends AppCompatActivity {
         userInfo.put("name", name);
         userInfo.put("age", age);
         databaseReference.updateChildren(userInfo);
-
         if(mUri != null){
-            final StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profilePic").child(userID);
+            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profilePicURL").child(userID);
             Bitmap bitmap = null;
 
             try {
@@ -126,9 +136,9 @@ public class SettingsActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, byteArrayOutputStream);
-            final byte[] data = byteArrayOutputStream.toByteArray();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
+            byte[] data = baos.toByteArray();
             UploadTask uploadTask = filepath.putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -139,24 +149,16 @@ public class SettingsActivity extends AppCompatActivity {
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Map userPic = new HashMap();
-                            userPic.put("profilePicURL", uri.toString());
-                            databaseReference.updateChildren(userPic);
+                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                            finish();
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            finish();
-                        }
-                    });
+                    Map userInfo = new HashMap();
+                    userInfo.put("profilePicURL", downloadUrl.toString());
+                    databaseReference.updateChildren(userInfo);
+
+                    finish();
+                    return;
                 }
             });
-
         }else{
             finish();
         }

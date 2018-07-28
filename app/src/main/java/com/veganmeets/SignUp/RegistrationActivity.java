@@ -1,4 +1,4 @@
-package com.veganmeets;
+package com.veganmeets.SignUp;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,9 +15,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.veganmeets.App.MainActivity;
+import com.veganmeets.R;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegistrationActivity extends AppCompatActivity {
 
@@ -60,9 +64,12 @@ public class RegistrationActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"Registration Unsuccessful",Toast.LENGTH_SHORT).show();
                         }else{
                             String userID = firebaseAuth.getCurrentUser().getUid();
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference()
-                                    .child("Users").child(radioButton.getText().toString()).child(userID).child("name");
-                            databaseReference.setValue(name);
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
+                            Map userInfo = new HashMap<>();
+                            userInfo.put("name", name);
+                            userInfo.put("userSex", radioButton.getText().toString());
+                            userInfo.put("profilePicURL","default");
+                            databaseReference.updateChildren(userInfo);
                             startActivity(new Intent(getApplicationContext(),MainActivity.class));
                         }
                     }

@@ -1,13 +1,15 @@
-package com.veganmeets;
+package com.veganmeets.CardsArray;
 
 import android.content.Context;
-import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.veganmeets.R;
 
 import java.util.List;
 
@@ -33,8 +35,15 @@ public class card_arrayAdapter extends ArrayAdapter<cards_reference>{
         ImageView card_image = (ImageView) holder.findViewById(R.id.card_image);
 
         card_name.setText(card_item.getName());
-        card_image.setImageResource(R.mipmap.ic_launcher);
-
+        switch (card_item.getProfilePicURL()) {
+            case "default":
+                Glide.with(holder.getContext()).load(R.mipmap.ic_default_profile).into(card_image);
+                break;
+            default:
+                Glide.clear(card_image);
+                Glide.with(holder.getContext()).load(card_item.getProfilePicURL()).into(card_image);
+                break;
+        }
         return holder;
     }
 }

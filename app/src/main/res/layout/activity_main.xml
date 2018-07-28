@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.veganmeets.MainActivity">
+    tools:context="com.veganmeets.App.MainActivity">
 
     <com.lorentzos.flingswipe.SwipeFlingAdapterView
         android:id="@+id/frame"
-        android:background="#ffeee9e2"
+        android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:rotation_degrees="15.5"
@@ -30,5 +30,14 @@
         android:layout_alignParentBottom="true"
         android:text="Settings"
         android:onClick="goToSettings"/>
+
+    <Button
+        android:id="@+id/matches"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_alignParentBottom="true"
+        android:text="Matches"
+        android:onClick="goToMatches"/>
 
 </RelativeLayout>
