@@ -34,7 +34,6 @@ public class MainActivity extends Activity {
     private card_arrayAdapter arrayAdapter;
 
     private String userSex,oppositeSex,currentUID;
-    private int i;
     private Button signout;
 
     private FirebaseAuth firebaseAuth;
@@ -129,10 +128,10 @@ public class MainActivity extends Activity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     Toast.makeText(MainActivity.this,"New Match!",Toast.LENGTH_LONG).show();
-                    String key = FirebaseDatabase.getInstance().getReference().child("Chat").push().getKey();
+                    String key = FirebaseDatabase.getInstance().getReference().child("Chats").push().getKey();
 
                     databaseReference.child(dataSnapshot.getKey()).child("swipes").child("matches").child(currentUID).child("ChatID").setValue(key);
-                    databaseReference.child(currentUID).child("swipes").child("matches").child(dataSnapshot.getKey()).child("ChildID").setValue(key);
+                    databaseReference.child(currentUID).child("swipes").child("matches").child(dataSnapshot.getKey()).child("ChatID").setValue(key);
 
 
 
