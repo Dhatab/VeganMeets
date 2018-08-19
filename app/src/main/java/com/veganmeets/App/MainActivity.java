@@ -117,8 +117,8 @@ public class MainActivity extends Activity {
                 firebaseAuth.signOut();
                 startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                 finish();
-            }
-        });
+    }
+});
     }
 
     private void usersMatched(String userID){

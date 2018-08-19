@@ -14,7 +14,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.veganmeets.App.MainActivity;
+import com.veganmeets.MainFragments.MainFragmentActivity;
 import com.veganmeets.R;
 
 public class LoginActivity extends AppCompatActivity {
@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 final FirebaseUser mUser = FirebaseAuth.getInstance().getCurrentUser();
                 if (mUser != null) {
-                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    startActivity(new Intent(getApplicationContext(), MainFragmentActivity.class));
                     finish();
                 }
             }
@@ -58,7 +58,7 @@ public class LoginActivity extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             Toast.makeText(getApplicationContext(), "Login Unsuccessful", Toast.LENGTH_SHORT).show();
                         }else{
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                            startActivity(new Intent(LoginActivity.this, MainFragmentActivity.class));
                             finish();
                         }
                     }
