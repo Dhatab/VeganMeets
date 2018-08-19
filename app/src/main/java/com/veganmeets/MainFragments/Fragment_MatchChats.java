@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -17,6 +18,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.veganmeets.Matches.MatchesAdapter;
 import com.veganmeets.Matches.MatchesReference;
+import com.veganmeets.Matches.RecyclerViewChatAdapter;
+import com.veganmeets.Matches.RecyclerViewChatReference;
 import com.veganmeets.R;
 
 import java.util.ArrayList;
@@ -28,7 +31,7 @@ import java.util.List;
 
 public class Fragment_MatchChats extends Fragment {
     private RecyclerView mRecyclerView, mRecyclerViewChat;
-    private RecyclerView.Adapter mMatchesAdapter;
+    private RecyclerView.Adapter mMatchesAdapter, mChatAdapter;
     private String currentUserID;
 
     @Nullable
@@ -49,9 +52,10 @@ public class Fragment_MatchChats extends Fragment {
     mRecyclerViewChat.setLayoutManager(layoutManagerChat);
 
     mMatchesAdapter = new MatchesAdapter(getDataSetMatches(), getContext());
+    mChatAdapter = new RecyclerViewChatAdapter(getDataSetChat(), getContext());
 
-    mRecyclerView.setAdapter(mMatchesAdapter);
-    mRecyclerViewChat.setAdapter(mMatchesAdapter);
+    //mRecyclerView.setAdapter(mMatchesAdapter);
+    //mRecyclerViewChat.setAdapter(mMatchesAdapter);
 
     getUserMatchId();
     return v;
@@ -66,7 +70,44 @@ public class Fragment_MatchChats extends Fragment {
                 if (dataSnapshot.exists()){
                     for(DataSnapshot match : dataSnapshot.getChildren()){
                         FetchMatchInfo(match.getKey());
+                        CheckChatID(match.child("ChatID").getKey());
                     }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+    private void FetchChatID(String key){
+        DatabaseReference userChatID = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("swipes").child("matches")
+                .child(key).child("ChatID");
+        userChatID.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                String chat_id = dataSnapshot.getKey();
+                CheckChatID(chat_id);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void CheckChatID(String chat) {
+        DatabaseReference ChatDB = FirebaseDatabase.getInstance().getReference().child("Chat").child(chat);
+        ChatDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    mRecyclerViewChat.setAdapter(mChatAdapter);
+                    mChatAdapter.notifyDataSetChanged();
+                } else{
+                    mRecyclerView.setAdapter(mMatchesAdapter);
+                    mMatchesAdapter.notifyDataSetChanged();
                 }
             }
 
@@ -95,8 +136,13 @@ public class Fragment_MatchChats extends Fragment {
                         matches_userProPic = dataSnapshot.child("profilePicURL").getValue().toString();
                     }
                     MatchesReference object = new MatchesReference(matched_userID, matches_userName, matches_userProPic);
+                    RecyclerViewChatReference chat_obj = new RecyclerViewChatReference(matched_userID, matches_userName, matches_userProPic);
                     resultsMatches.add(object);
                     mMatchesAdapter.notifyDataSetChanged();
+
+                    resultsChats.add(chat_obj);
+                    mChatAdapter.notifyDataSetChanged();
+
                 }
             }
 
@@ -108,7 +154,12 @@ public class Fragment_MatchChats extends Fragment {
     }
 
     private ArrayList<MatchesReference> resultsMatches = new ArrayList<MatchesReference>();
+    private ArrayList<RecyclerViewChatReference> resultsChats = new ArrayList<RecyclerViewChatReference>();
+
     private List<MatchesReference> getDataSetMatches() {
         return resultsMatches;
+    }
+    private List<RecyclerViewChatReference> getDataSetChat() {
+        return resultsChats;
     }
 }

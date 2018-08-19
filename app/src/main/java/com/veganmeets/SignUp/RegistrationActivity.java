@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.veganmeets.App.MainActivity;
+import com.veganmeets.MainFragments.MainFragmentActivity;
 import com.veganmeets.R;
 
 import java.util.HashMap;
@@ -70,7 +71,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             userInfo.put("userSex", radioButton.getText().toString());
                             userInfo.put("profilePicURL","default");
                             databaseReference.updateChildren(userInfo);
-                            startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                            startActivity(new Intent(getApplicationContext(),MainFragmentActivity.class));
                         }
                     }
                 });
