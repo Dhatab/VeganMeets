@@ -22,7 +22,6 @@
         </activity>
         <activity android:name=".App.SettingsActivity" />
         <activity android:name=".Matches.MatchesActivity" />
-        <activity android:name=".MatchChats.MatchChatsActivity" />
         <activity android:name=".Chats.ChatActivity" />
         <activity
             android:name=".MainFragments.MainFragmentActivity"

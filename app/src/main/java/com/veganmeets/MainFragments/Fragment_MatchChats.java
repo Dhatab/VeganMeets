@@ -1,8 +1,10 @@
 package com.veganmeets.MainFragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,6 +35,7 @@ public class Fragment_MatchChats extends Fragment {
     private RecyclerView mRecyclerView, mRecyclerViewChat;
     private RecyclerView.Adapter mMatchesAdapter, mChatAdapter;
     private String currentUserID;
+    private DatabaseReference mDatabaseChat;
 
     @Nullable
     @Override
@@ -41,6 +44,7 @@ public class Fragment_MatchChats extends Fragment {
 
 
     currentUserID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+    mDatabaseChat = FirebaseDatabase.getInstance().getReference().child("Chat");
     LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
     LinearLayoutManager layoutManagerChat = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
     mRecyclerView = (RecyclerView) v.findViewById(R.id.recyclerView);
@@ -61,6 +65,7 @@ public class Fragment_MatchChats extends Fragment {
     return v;
     }
 
+
     //this method will get the user ID in the database that you matched with. It will run through the matches child and get all the user IDs
     private void getUserMatchId() {
         DatabaseReference matchDB = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("swipes").child("matches");
@@ -69,8 +74,7 @@ public class Fragment_MatchChats extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
                     for(DataSnapshot match : dataSnapshot.getChildren()){
-                        FetchMatchInfo(match.getKey());
-                        CheckChatID(match.child("ChatID").getKey());
+                        CheckChatID(match.getKey());
                     }
                 }
             }
@@ -81,33 +85,16 @@ public class Fragment_MatchChats extends Fragment {
             }
         });
     }
-    private void FetchChatID(String key){
-        DatabaseReference userChatID = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("swipes").child("matches")
-                .child(key).child("ChatID");
-        userChatID.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String chat_id = dataSnapshot.getKey();
-                CheckChatID(chat_id);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
 
-            }
-        });
-    }
-
-    private void CheckChatID(String chat) {
-        DatabaseReference ChatDB = FirebaseDatabase.getInstance().getReference().child("Chat").child(chat);
+    private void CheckChatID(final String chat) {
+        DatabaseReference ChatDB = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID).child("swipes").child("matches")
+                .child(chat).child("ChatID");
         ChatDB.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
+                @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    mRecyclerViewChat.setAdapter(mChatAdapter);
-                    mChatAdapter.notifyDataSetChanged();
-                } else{
-                    mRecyclerView.setAdapter(mMatchesAdapter);
-                    mMatchesAdapter.notifyDataSetChanged();
+                    String ChatID = dataSnapshot.getValue().toString();
+                    ChatIDExist(ChatID, chat);
                 }
             }
 
@@ -117,6 +104,27 @@ public class Fragment_MatchChats extends Fragment {
             }
         });
     }
+
+    private void ChatIDExist(String chatID, final String oppUserID) {
+        DatabaseReference ChatDB = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatID);
+        ChatDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()){
+                    FetchChatInfo(oppUserID);
+                } else {
+                    FetchMatchInfo(oppUserID);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
 
     //This method will get the user you matched with in the database. It will get there information, such as name, age etc...
     private void FetchMatchInfo(String key) {
@@ -136,11 +144,38 @@ public class Fragment_MatchChats extends Fragment {
                         matches_userProPic = dataSnapshot.child("profilePicURL").getValue().toString();
                     }
                     MatchesReference object = new MatchesReference(matched_userID, matches_userName, matches_userProPic);
-                    RecyclerViewChatReference chat_obj = new RecyclerViewChatReference(matched_userID, matches_userName, matches_userProPic);
                     resultsMatches.add(object);
+                    mRecyclerView.setAdapter(mMatchesAdapter);
                     mMatchesAdapter.notifyDataSetChanged();
+                }
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void FetchChatInfo(String key) {
+        DatabaseReference userDB = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
+        userDB.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()){
+                    String matched_userID = dataSnapshot.getKey();
+                    String matches_userName = "";
+                    String matches_userProPic = "";
+
+                    if(dataSnapshot.child("name").getValue() != null){
+                        matches_userName = dataSnapshot.child("name").getValue().toString();
+                    }
+                    if(dataSnapshot.child("profilePicURL").getValue() != null){
+                        matches_userProPic = dataSnapshot.child("profilePicURL").getValue().toString();
+                    }
+                    RecyclerViewChatReference chat_obj = new RecyclerViewChatReference(matched_userID, matches_userName, matches_userProPic);
                     resultsChats.add(chat_obj);
+                    mRecyclerViewChat.setAdapter(mChatAdapter);
                     mChatAdapter.notifyDataSetChanged();
 
                 }
