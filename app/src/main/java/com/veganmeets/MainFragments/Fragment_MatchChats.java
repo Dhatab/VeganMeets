@@ -17,6 +17,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.veganmeets.Matches.MatchesAdapter;
 import com.veganmeets.Matches.MatchesReference;
@@ -105,13 +106,27 @@ public class Fragment_MatchChats extends Fragment {
         });
     }
 
-    private void ChatIDExist(String chatID, final String oppUserID) {
-        DatabaseReference ChatDB = FirebaseDatabase.getInstance().getReference().child("Chat").child(chatID);
+    private void ChatIDExist(final String chatID, final String oppUserID) {
+        final DatabaseReference ChatDB = mDatabaseChat.child(chatID);
+        final Query lastQuery = ChatDB.orderByKey().limitToLast(1);
         ChatDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()){
-                    FetchChatInfo(oppUserID);
+                  lastQuery.addValueEventListener(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(DataSnapshot dataSnapshot) {
+                           for(DataSnapshot child: dataSnapshot.getChildren()){
+                               String key = child.child("text").getValue().toString();
+                               FetchChatInfo(oppUserID,key);
+                           }
+                       }
+
+                       @Override
+                       public void onCancelled(DatabaseError databaseError) {
+
+                       }
+                   });
                 } else {
                     FetchMatchInfo(oppUserID);
                 }
@@ -157,7 +172,7 @@ public class Fragment_MatchChats extends Fragment {
         });
     }
 
-    private void FetchChatInfo(String key) {
+    private void FetchChatInfo(String key, final String chatID) {
         DatabaseReference userDB = FirebaseDatabase.getInstance().getReference().child("Users").child(key);
         userDB.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -166,6 +181,7 @@ public class Fragment_MatchChats extends Fragment {
                     String matched_userID = dataSnapshot.getKey();
                     String matches_userName = "";
                     String matches_userProPic = "";
+                    String match_CHATID = chatID;
 
                     if(dataSnapshot.child("name").getValue() != null){
                         matches_userName = dataSnapshot.child("name").getValue().toString();
@@ -173,7 +189,9 @@ public class Fragment_MatchChats extends Fragment {
                     if(dataSnapshot.child("profilePicURL").getValue() != null){
                         matches_userProPic = dataSnapshot.child("profilePicURL").getValue().toString();
                     }
-                    RecyclerViewChatReference chat_obj = new RecyclerViewChatReference(matched_userID, matches_userName, matches_userProPic);
+
+
+                    RecyclerViewChatReference chat_obj = new RecyclerViewChatReference(matched_userID, matches_userName, matches_userProPic, match_CHATID);
                     resultsChats.add(chat_obj);
                     mRecyclerViewChat.setAdapter(mChatAdapter);
                     mChatAdapter.notifyDataSetChanged();

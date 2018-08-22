@@ -21,7 +21,7 @@ public class MainFragmentActivity extends AppCompatActivity {
 
         //Setup the Viewpager with sections adapter
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(5);
         setupViewPager(mViewPager);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
