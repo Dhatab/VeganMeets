@@ -119,6 +119,7 @@ public class Fragment_MatchChats extends Fragment {
                            for(DataSnapshot child: dataSnapshot.getChildren()){
                                String key = child.child("text").getValue().toString();
                                FetchChatInfo(oppUserID,key);
+
                            }
                        }
 
