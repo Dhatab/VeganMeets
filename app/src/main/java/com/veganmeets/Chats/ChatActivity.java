@@ -1,5 +1,7 @@
 package com.veganmeets.Chats;
 
+import android.app.Fragment;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +17,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.veganmeets.MainFragments.Fragment_MatchChats;
+import com.veganmeets.MainFragments.MainFragmentActivity;
 import com.veganmeets.R;
 
 import java.util.ArrayList;
@@ -29,9 +33,10 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText mSendEditText;
     private Button mSendButton;
-    private String currentUserID, matchId, chatId;
+    private String currentUserID, matchId, chatId, backUser,backMessage;
+    private String message, createdByUser;
 
-    DatabaseReference mDatabaseUser, mDatabaseChat;
+    DatabaseReference mDatabaseUser, mDatabaseChat, mDatabaseLastMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +50,7 @@ public class ChatActivity extends AppCompatActivity {
         mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID)
                 .child("swipes").child("matches").child(matchId).child("ChatID");
         mDatabaseChat = FirebaseDatabase.getInstance().getReference().child("Chat");
+        mDatabaseLastMessage = FirebaseDatabase.getInstance().getReference().child("Chat").child("lastMessage");
 
         getChatId();
 
@@ -69,20 +75,40 @@ public class ChatActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
     private void sendMessage() {
         String sendMessageText = mSendEditText.getText().toString();
+        DatabaseReference lastMessage = mDatabaseLastMessage.child(chatId);
 
         if(!sendMessageText.isEmpty()){
             DatabaseReference newMessageDb = mDatabaseChat.push();
+
 
             Map newMessage = new HashMap();
             newMessage.put("createdByUser", currentUserID);
             newMessage.put("text", sendMessageText);
 
+            Map mLastMessage = new HashMap();
+            mLastMessage.put("UserCreated", currentUserID);
+            mLastMessage.put("lastText", sendMessageText);
+
+            backUser = currentUserID;
+            backMessage = sendMessageText;
+
             newMessageDb.setValue(newMessage);
+            lastMessage.setValue(mLastMessage);
+
+
         }
         mSendEditText.setText(null);
     }
+
+
+
 
     private void getChatId(){
         mDatabaseUser.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -107,8 +133,6 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot.exists()){
-                    String message = "";
-                    String createdByUser = "";
 
                     if(dataSnapshot.child("text").getValue()!=null){
                         message = dataSnapshot.child("text").getValue().toString();
@@ -143,7 +167,6 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
-
 
     private ArrayList<ChatObject> resultsChat = new ArrayList<ChatObject>();
     private List<ChatObject> getDataSetChat() {

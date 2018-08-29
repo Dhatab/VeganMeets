@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:id="@+id/frag_container"
     android:orientation="vertical">
 
     <TextView
@@ -16,7 +17,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
         android:id="@+id/recyclerView"
         android:orientation="horizontal"
         android:layout_marginLeft="2dp">

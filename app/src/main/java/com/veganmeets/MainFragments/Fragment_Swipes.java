@@ -2,14 +2,19 @@ package com.veganmeets.MainFragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,6 +27,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 import com.veganmeets.App.SettingsActivity;
+import com.veganmeets.CardsArray.bottom_card_arrayAdapter;
+import com.veganmeets.CardsArray.bottom_view_reference;
 import com.veganmeets.CardsArray.card_arrayAdapter;
 import com.veganmeets.CardsArray.cards_reference;
 import com.veganmeets.Matches.MatchesActivity;
@@ -39,46 +46,67 @@ public class Fragment_Swipes extends Fragment {
     private cards_reference cards_data[];
     private card_arrayAdapter arrayAdapter;
 
+    private bottom_view_reference bottom_data[];
     private String userSex,oppositeSex,currentUID;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
     private Button mLogout;
-
-    ListView listView;
+    private BottomSheetBehavior bottomSheetBehavior;
+    private RecyclerView.Adapter bottomAdapter;
+    private View bottomSheet;
     List<cards_reference> cardItems;
+    private RecyclerView recyclerView;
+    private ArrayList<bottom_view_reference> bottomCardItem = new ArrayList<bottom_view_reference>();
+    private List<bottom_view_reference> getBio() {
+        return bottomCardItem;
+    }
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        final View v = inflater.inflate(R.layout.frag_swipes, container, false);
+        View v = inflater.inflate(R.layout.frag_swipes, container, false);
 
         firebaseAuth = FirebaseAuth.getInstance();
         currentUID = firebaseAuth.getCurrentUser().getUid();
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Users");
+        bottomSheet = v.findViewById(R.id.bottom_sheet);
         mLogout = (Button) v.findViewById(R.id.signout1);
+
+        recyclerView = (RecyclerView) v.findViewById(R.id.bottomRecyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        bottomAdapter = new bottom_card_arrayAdapter(getBio(), getContext());
+
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+
         checkUserSex();
 
         mLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logOut(v);
+                logOut(view);
             }
         });
-
         cardItems = new ArrayList<>();
+
         arrayAdapter = new card_arrayAdapter(getContext(), R.layout.item, cardItems);
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) v.findViewById(R.id.frame);
 
+
         flingContainer.setAdapter(arrayAdapter);
+        recyclerView.setAdapter(bottomAdapter);
+
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
                 cardItems.remove(0);
+                bottomCardItem.remove(0);
                 arrayAdapter.notifyDataSetChanged();
+                bottomAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -188,8 +216,12 @@ public class Fragment_Swipes extends Fragment {
                             profilePicURL = dataSnapshot.child("profilePicURL").getValue().toString();
                         }
                         cards_reference item = new cards_reference(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString(), profilePicURL);
+                        bottom_view_reference bottom_item = new bottom_view_reference(dataSnapshot.getKey(),dataSnapshot.child("name").getValue().toString());
                         cardItems.add(item);
+                        bottomCardItem.add(bottom_item);
+
                         arrayAdapter.notifyDataSetChanged();
+                        bottomAdapter.notifyDataSetChanged();
                     }
                 }
             }

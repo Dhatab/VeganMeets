@@ -7,18 +7,11 @@ package com.veganmeets.Matches;
 public class RecyclerViewChatReference {
     private String userID, userName, userProfilePic,chatID;
 
+
     public RecyclerViewChatReference(String userID, String userName, String userProfilePic, String chatID) {
         this.userID = userID;
         this.userName = userName;
         this.userProfilePic = userProfilePic;
-        this.chatID = chatID;
-    }
-
-    public String getChatID() {
-        return chatID;
-    }
-
-    public void setChatID(String chatID) {
         this.chatID = chatID;
     }
 
@@ -45,4 +38,13 @@ public class RecyclerViewChatReference {
     public void setUserProfilePic(String userProfilePic) {
         this.userProfilePic = userProfilePic;
     }
+
+    public String getChatID() {
+        return chatID;
+    }
+
+    public void setChatID(String chatID) {
+        this.chatID = chatID;
+    }
+
 }

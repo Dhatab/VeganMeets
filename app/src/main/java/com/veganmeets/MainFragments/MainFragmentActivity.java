@@ -1,5 +1,6 @@
 package com.veganmeets.MainFragments;
 
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
@@ -21,7 +22,7 @@ public class MainFragmentActivity extends AppCompatActivity {
 
         //Setup the Viewpager with sections adapter
         mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setOffscreenPageLimit(5);
+        mViewPager.setOffscreenPageLimit(3);
         setupViewPager(mViewPager);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -36,4 +37,6 @@ public class MainFragmentActivity extends AppCompatActivity {
         adapter.addFragment(new Fragment_MatchChats(), "Chat");
         viewPager.setAdapter(adapter);
     }
+
+
 }
