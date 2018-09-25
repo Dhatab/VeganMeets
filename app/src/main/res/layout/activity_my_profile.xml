@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fadeGrey"
+    android:orientation="vertical"
+    tools:context="com.veganmeets.App.MyProfile">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <GridLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:rowCount="2">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myProPic1"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_profile_pic_white"
+                    app:civ_border_color="@color/whiteBackground"
+                    app:civ_border_width="2dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myProPic2"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_profile_pic_white"
+                    app:civ_border_color="@color/whiteBackground"
+                    app:civ_border_width="2dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myProPic3"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_profile_pic_white"
+                    app:civ_border_color="@color/whiteBackground"
+                    app:civ_border_width="2dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myProPic4"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_profile_pic_white"
+                    app:civ_border_color="@color/whiteBackground"
+                    app:civ_border_width="2dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myProPic5"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_profile_pic_white"
+                    app:civ_border_color="@color/whiteBackground"
+                    app:civ_border_width="2dp" />
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:id="@+id/myProPic6"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_columnWeight="1"
+                    android:layout_margin="4dp"
+                    android:src="@drawable/ic_profile_pic_white"
+                    app:civ_border_color="@color/whiteBackground"
+                    app:civ_border_width="2dp" />
+            </GridLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="About Me"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/my_bio"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:background="@drawable/text_box_line"
+                android:focusableInTouchMode="true"
+                android:gravity="top"
+                android:hint="Add Bio"
+                android:paddingLeft="8dp"
+                android:textSize="18dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="My Information"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/my_job"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/text_box_line"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:hint="Add Job"
+                android:paddingLeft="8dp"
+                android:textSize="18dp" />
+
+            <EditText
+                android:id="@+id/my_education"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@drawable/text_box_line"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:hint="Add Education"
+                android:paddingLeft="8dp"
+                android:textSize="18dp" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="My Sex"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/my_sex"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/text_box_line"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radio_sex1"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/text_box_line"
+                    android:buttonTint="@color/colorPrimary"
+                    android:text="Male"
+                    android:textSize="18dp" />
+
+                <RadioButton
+                    android:id="@+id/radio_sex2"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/text_box_style"
+                    android:buttonTint="@color/colorPrimary"
+                    android:text="Female"
+                    android:textSize="18dp" />
+
+
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:text="My Lifestyle"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16dp"
+                android:textStyle="bold" />
+
+            <RadioGroup
+                android:id="@+id/my_diet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checkedButton="@id/radio_1"
+                android:orientation="vertical">
+
+                <RadioButton
+                    android:id="@+id/radio_1"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/text_box_line"
+                    android:buttonTint="@color/colorPrimary"
+                    android:text="Vegan"
+                    android:textSize="18dp" />
+
+                <RadioButton
+                    android:id="@+id/radio_2"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/text_box_line"
+                    android:buttonTint="@color/colorPrimary"
+                    android:text="Vegetarian"
+                    android:textSize="18dp" />
+
+                <RadioButton
+                    android:id="@+id/radio_3"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@drawable/text_box_line"
+                    android:buttonTint="@color/colorPrimary"
+                    android:text="Pescatarian"
+                    android:textSize="18dp" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/my_save_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="4dp"
+                android:background="@drawable/text_box_style"
+                android:text="Save" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
