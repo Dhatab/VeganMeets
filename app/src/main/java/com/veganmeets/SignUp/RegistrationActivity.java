@@ -17,7 +17,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.veganmeets.App.MainActivity;
 import com.veganmeets.MainFragments.MainFragmentActivity;
 import com.veganmeets.R;
 
@@ -65,7 +64,7 @@ public class RegistrationActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"Registration Unsuccessful",Toast.LENGTH_SHORT).show();
                         }else{
                             String userID = firebaseAuth.getCurrentUser().getUid();
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID).child("myProfile");
                             Map userInfo = new HashMap<>();
                             userInfo.put("name", name);
                             userInfo.put("userSex", radioButton.getText().toString());

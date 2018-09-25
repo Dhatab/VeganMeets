@@ -1,11 +1,14 @@
 package com.veganmeets.MainFragments;
 
 import android.content.Intent;
+import android.graphics.Rect;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.view.MotionEvent;
 
 import com.veganmeets.R;
 
@@ -37,6 +40,4 @@ public class MainFragmentActivity extends AppCompatActivity {
         adapter.addFragment(new Fragment_MatchChats(), "Chat");
         viewPager.setAdapter(adapter);
     }
-
-
 }

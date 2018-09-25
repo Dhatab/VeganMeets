@@ -182,11 +182,11 @@ public class Fragment_MatchChats extends Fragment {
                     String matches_userName = "";
                     String matches_userProPic = "";
 
-                    if(dataSnapshot.child("name").getValue() != null){
-                        matches_userName = dataSnapshot.child("name").getValue().toString();
+                    if(dataSnapshot.child("myProfile").child("name").getValue() != null){
+                        matches_userName = dataSnapshot.child("myProfile").child("name").getValue().toString();
                     }
-                    if(dataSnapshot.child("profilePicURL").getValue() != null){
-                        matches_userProPic = dataSnapshot.child("profilePicURL").getValue().toString();
+                    if(dataSnapshot.child("myProfile").child("profilePicURL").getValue() != null){
+                        matches_userProPic = dataSnapshot.child("myProfile").child("profilePicURL").getValue().toString();
                     }
                     MatchesReference object = new MatchesReference(matched_userID, matches_userName, matches_userProPic);
                     resultsMatches.add(object);
@@ -215,11 +215,11 @@ public class Fragment_MatchChats extends Fragment {
 
 
 
-                    if(dataSnapshot.child("name").getValue() != null){
-                        matches_userName = dataSnapshot.child("name").getValue().toString();
+                    if(dataSnapshot.child("myProfile").child("name").getValue() != null){
+                        matches_userName = dataSnapshot.child("myProfile").child("name").getValue().toString();
                     }
-                    if(dataSnapshot.child("profilePicURL").getValue() != null){
-                        matches_userProPic = dataSnapshot.child("profilePicURL").getValue().toString();
+                    if(dataSnapshot.child("myProfile").child("profilePicURL").getValue() != null){
+                        matches_userProPic = dataSnapshot.child("myProfile").child("profilePicURL").getValue().toString();
                     }
                     RecyclerViewChatReference chat_obj = new RecyclerViewChatReference(matched_userID, matches_userName, matches_userProPic, match_CHATID);
                     mResultsChats.add(chat_obj);

@@ -31,13 +31,12 @@ public class card_arrayAdapter extends ArrayAdapter<cards_reference>{
             holder = LayoutInflater.from(getContext()).inflate(R.layout.item, parent, false);
         }
 
-        TextView card_name = (TextView) holder.findViewById(R.id.card_name);
+        //TextView card_name = (TextView) holder.findViewById(R.id.card_name);
         ImageView card_image = (ImageView) holder.findViewById(R.id.card_image);
 
-        card_name.setText(card_item.getName());
+        //card_name.setText(card_item.getName());
         switch (card_item.getProfilePicURL()) {
             case "default":
-                Glide.with(holder.getContext()).load(R.mipmap.ic_default_profile).into(card_image);
                 break;
             default:
                 Glide.clear(card_image);

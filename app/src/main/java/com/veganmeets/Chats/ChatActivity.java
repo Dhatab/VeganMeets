@@ -50,7 +50,7 @@ public class ChatActivity extends AppCompatActivity {
         mDatabaseUser = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUserID)
                 .child("swipes").child("matches").child(matchId).child("ChatID");
         mDatabaseChat = FirebaseDatabase.getInstance().getReference().child("Chat");
-        mDatabaseLastMessage = FirebaseDatabase.getInstance().getReference().child("Chat").child("lastMessage");
+        mDatabaseLastMessage = FirebaseDatabase.getInstance().getReference().child("Chat");
 
         getChatId();
 
@@ -82,11 +82,11 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendMessage() {
         String sendMessageText = mSendEditText.getText().toString();
-        DatabaseReference lastMessage = mDatabaseLastMessage.child(chatId);
+
 
         if(!sendMessageText.isEmpty()){
             DatabaseReference newMessageDb = mDatabaseChat.push();
-
+            DatabaseReference lastMessage = mDatabaseLastMessage;
 
             Map newMessage = new HashMap();
             newMessage.put("createdByUser", currentUserID);
@@ -117,6 +117,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()){
                     chatId = dataSnapshot.getValue().toString();
                     mDatabaseChat = mDatabaseChat.child(chatId);
+                    mDatabaseLastMessage = mDatabaseLastMessage.child(chatId).child("lastMessage");
                     getChatMessages();
                 }
             }
@@ -132,6 +133,10 @@ public class ChatActivity extends AppCompatActivity {
         mDatabaseChat.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+            }
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot.exists()){
 
                     if(dataSnapshot.child("text").getValue()!=null){
@@ -151,10 +156,6 @@ public class ChatActivity extends AppCompatActivity {
                         mChatAdapter.notifyDataSetChanged();
                     }
                 }
-
-            }
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             }
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {

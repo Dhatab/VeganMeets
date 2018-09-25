@@ -7,15 +7,18 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -29,7 +32,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.veganmeets.App.MyProfile;
+import com.veganmeets.App.SettingsActivity;
 import com.veganmeets.R;
+import com.veganmeets.SignUp.LoginActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -44,12 +50,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class Fragment_Account extends Fragment {
 
-    private EditText settingsName, settingsAge;
-    private Button settingsBack, settingsConfirm;
-    private ImageView settingsProPic;
-
+    private CardView edit_profile_button, edit_profile_settings;
+    private Button logout;
+    private CircleImageView settingsProPic;
     private FirebaseAuth firebaseAuth;
     private DatabaseReference databaseReference;
+    private TextView settingsAge, settingsName;
 
     private String userID, name, age, profile_pic_url, userSex;
     private Uri mUri;
@@ -62,32 +68,30 @@ public class Fragment_Account extends Fragment {
 
         firebaseAuth = FirebaseAuth.getInstance();
         userID = firebaseAuth.getCurrentUser().getUid();
-        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID);
-
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(userID).child("myProfile");
         getUserInfo();
 
-        settingsProPic.setOnClickListener(new View.OnClickListener() {
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, 1);
+                firebaseAuth.signOut();
+                startActivity(new Intent(getContext(),LoginActivity.class));
             }
         });
 
-        settingsConfirm.setOnClickListener(new View.OnClickListener() {
+        edit_profile_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveUserInfo();
+                startActivity(new Intent(getContext(), MyProfile.class));
             }
         });
 
-        /*settingsBack.setOnClickListener(new View.OnClickListener() {
+        edit_profile_settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                startActivity(new Intent(getContext(),SettingsActivity.class));
             }
-        });*/
+        });
 
         return v;
     }
@@ -114,7 +118,6 @@ public class Fragment_Account extends Fragment {
                         profile_pic_url = map.get("profilePicURL").toString();
                         switch (profile_pic_url) {
                             case "default":
-                                Glide.with(getContext()).load(R.mipmap.ic_default_profile).into(settingsProPic);
                                 break;
                             default:
                                 Glide.with(getContext()).load(profile_pic_url).into(settingsProPic);
@@ -131,50 +134,6 @@ public class Fragment_Account extends Fragment {
         });
     }
 
-    private void saveUserInfo() {
-        name = settingsName.getText().toString();
-        age = settingsAge.getText().toString();
-
-        Map userInfo = new HashMap();
-        userInfo.put("name", name);
-        userInfo.put("age", age);
-        databaseReference.updateChildren(userInfo);
-        if (mUri != null) {
-            StorageReference filepath = FirebaseStorage.getInstance().getReference().child("profilePicURL").child(userID);
-            Bitmap bitmap = null;
-
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), mUri);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
-            byte[] data = baos.toByteArray();
-            UploadTask uploadTask = filepath.putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                }
-            });
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-
-                    Map userInfo = new HashMap();
-                    userInfo.put("profilePicURL", downloadUrl.toString());
-                    databaseReference.updateChildren(userInfo);
-                    //finish();
-                    return;
-                }
-            });
-        } else {
-            //finish();
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -186,10 +145,11 @@ public class Fragment_Account extends Fragment {
     }
 
     private void populateUI(View v) {
-        settingsName = (EditText) v.findViewById(R.id.settings_name);
-        settingsAge = (EditText) v.findViewById(R.id.settings_age);
-        settingsBack = (Button) v.findViewById(R.id.settings_back);
-        settingsConfirm = (Button) v.findViewById(R.id.settings_confirm);
-        settingsProPic = (CircleImageView) v.findViewById(R.id.account_profile_image1);
+        edit_profile_button = (CardView) v.findViewById(R.id.setting_edit_profile);
+        edit_profile_settings = (CardView) v.findViewById(R.id.setting_edit_settings);
+        settingsAge = (TextView) v.findViewById(R.id.setting_user_age);
+        settingsName = (TextView) v.findViewById(R.id.setting_user_name);
+        settingsProPic = (CircleImageView) v.findViewById(R.id.main_profile_image);
+        logout = (Button) v.findViewById(R.id.logout_btn);
     }
 }

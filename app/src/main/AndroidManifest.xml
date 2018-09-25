@@ -11,7 +11,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".App.MainActivity" />
         <activity android:name=".SignUp.RegistrationActivity" />
         <activity android:name=".SignUp.LoginActivity">
             <intent-filter>
@@ -21,12 +20,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".App.SettingsActivity" />
-        <activity android:name=".Matches.MatchesActivity" />
         <activity android:name=".Chats.ChatActivity" />
         <activity
             android:name=".MainFragments.MainFragmentActivity"
             android:label="@string/title_activity_main_fragment"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".App.MyProfile"></activity>
     </application>
 
 </manifest>

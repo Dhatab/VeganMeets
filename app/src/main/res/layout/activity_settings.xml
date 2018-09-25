@@ -4,43 +4,148 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/fadeGrey"
     tools:context="com.veganmeets.App.SettingsActivity"
-    android:orientation="vertical"
-    android:padding="20sp">
+    android:orientation="vertical">
 
-    <ImageView
-        android:layout_width="100sp"
-        android:layout_height="100sp"
-        android:id="@+id/settings_profile_pic"
-        android:src="@drawable/ic_profile_pic"
+
+
+    <TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="2dp"
+    android:text="I am interested in:"
+    android:textColor="@color/colorPrimary"
+    android:textSize="16dp"
+    android:textStyle="bold" />
+
+    <RadioGroup
+        android:id="@+id/my_sex_pref"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/sex_pref1"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Male"
+            android:textSize="18dp"
+            android:background="@drawable/text_box_line"
+            android:buttonTint="@color/colorPrimary" />
+
+        <RadioButton
+            android:id="@+id/sex_pref2"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Female"
+            android:textSize="18dp"
+            android:background="@drawable/text_box_line"
+            android:buttonTint="@color/colorPrimary" />
+
+        <RadioButton
+            android:id="@+id/sex_pref3"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Both"
+            android:textSize="18dp"
+            android:background="@drawable/text_box_line"
+            android:buttonTint="@color/colorPrimary"
+            android:layout_marginBottom="6dp"/>
+    </RadioGroup>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:text="Age Preference:"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="8dp"
+        android:background="@drawable/text_box_line"
+        android:layout_marginBottom="6dp">
+
+        <TextView
+            android:id="@+id/age_pref"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="18"
+            android:textColor="@color/colorPrimary"/>
+
+    <com.crystal.crystalrangeseekbar.widgets.CrystalRangeSeekbar
+        android:id="@+id/ageSeekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="12dp"
+        app:corner_radius="10"
+        app:min_value="18"
+        app:max_value="80"
+        app:gap="1"
+        app:bar_color="@color/whiteBackground"
+        app:bar_highlight_color="@color/colorPrimary"
+        app:left_thumb_color="@color/colorPrimary"
+        app:right_thumb_color="@color/colorPrimary"
+        app:left_thumb_color_pressed="@color/colorPrimary"
+        app:right_thumb_color_pressed="@color/colorPrimary"
+        app:data_type="_integer"/>
+    </RelativeLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="2dp"
+        android:text="Distance Preference:"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:padding="8dp"
+        android:background="@drawable/text_box_line">
+
+        <TextView
+            android:id="@+id/distance_pref"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Up to"
+            android:textColor="@color/colorPrimary"/>
+
+        <com.crystal.crystalrangeseekbar.widgets.CrystalSeekbar
+            android:id="@+id/distanceSeekbar"
+            android:layout_centerInParent="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:min_value="1"
+            app:max_value="100"
+            app:bar_color="@color/whiteBackground"
+            app:bar_highlight_color="@color/colorPrimary"
+            app:left_thumb_color="@color/colorPrimary"
+            app:left_thumb_color_pressed="@color/colorPrimary"
+            app:data_type="_integer"/>
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:id="@+id/settings_save_btn"
         android:layout_gravity="center"
-        android:layout_marginBottom="20sp"/>
+        android:background="@drawable/text_box_style"
+        android:text="Save"/>
 
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/settings_name"
-        android:hint="Your Name"
-        android:layout_marginBottom="20sp"/>
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/settings_age"
-        android:hint="Your Age"
-        android:layout_marginBottom="20sp"
-        android:inputType="number"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/settings_confirm"
-        android:text="Confirm"/>
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/settings_back"
-        android:text="GO BACK"/>
 
 </LinearLayout>
